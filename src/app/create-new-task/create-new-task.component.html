@@ -1,0 +1,82 @@
+<div class="container">
+<h3><i>Create new task</i></h3>
+<br>
+<form [formGroup]="formValidation" >
+    <div class="forms">
+    <!--task name-->
+        <label><b>Task Name<span class="required-indicator">*</span></b></label>
+        <input type="text" 
+         placeholder="Enter task name here..." 
+         class="form-control" 
+         id="taskName" 
+         formControlName="taskName" 
+         autocomplete="off"
+         [(ngModel)]="task.taskName"
+        >
+        <span style="color:red" *ngIf="taskName && taskName.invalid && taskName.touched">
+        Task name required!</span>
+        <pre></pre>
+  
+        <!--task description-->
+        <label><b>Description<span class="required-indicator">*</span></b></label>
+        <textarea placeholder="Enter task description here..." 
+         class="form-control" 
+         id="description" 
+         formControlName="taskDescription" 
+         autocomplete="off"
+         [(ngModel)]="task.taskDescription"
+        >
+        </textarea>
+        <span style="color:red" *ngIf="taskDescription && taskDescription.invalid && taskDescription.touched">
+        Task description required!</span>
+        <pre></pre>
+        <label><b>Due Date<span class="required-indicator">*</span></b></label>
+        <br>
+        <input type="date" 
+         [value]="TodayDate" 
+         [min]="minValue"
+         formControlName="dueDate" 
+         [(ngModel)]="task.dueDate"
+        >
+        <pre></pre>
+  
+        <!--Status-->
+        <label><b>Status<span class="required-indicator">*</span></b></label>
+            <div *ngFor="let state of status">
+               <input type="radio"
+               name="statusOfTask"
+               value="{{state.value}}"
+               (change)="radioHandler(state.value)"
+               formControlName="statusOfTask"
+               [checked]="selectedOption"
+               [(ngModel)]="task.status"
+               >
+               {{state.indicator}}
+               {{state.value}}
+            </div>
+            
+        <pre></pre>
+        
+            <div class="buttons">
+                <button mat-button class="btn btn-dark"
+                 [disabled]="formValidation.invalid"
+                 (click)="onSubmit()"
+                >
+                Done 
+                </button> 
+      
+                <button mat-button class="btn btn-light" 
+                style="margin-left: 30px;"
+                (click)="onReset()"
+                > 
+                Reset
+                </button>
+      
+                <button mat-button class="btn btn-light" 
+                 style="margin-left: 30px;"
+                 (click)="onCancel()"
+                > 
+                 Cancel 
+                </button>
+            </div>
+</div>

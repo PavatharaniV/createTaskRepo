@@ -1,0 +1,206 @@
+<div class="container">
+  <h3><i>Create new task</i></h3>
+  <br>
+  <form [formGroup]="formValidation" >
+      <div class="forms">
+          <!--task name-->
+          <label><b>Task Name<span class="required-indicator">*</span></b></label>
+          <input type="text" 
+            placeholder="Enter task name here..." 
+            class="form-control" 
+            id="taskName" 
+            formControlName="taskName" 
+            autocomplete="off"
+            [(ngModel)]="task.taskName"
+          >
+          <span style="color:red" *ngIf="taskName && taskName.invalid && taskName.touched">
+          Task name required!</span>
+          <pre></pre>
+
+          <!--task description-->
+          <label><b>Description<span class="required-indicator">*</span></b></label>
+          <textarea placeholder="Enter task description here..." 
+            class="form-control" 
+            id="description" 
+            formControlName="taskDescription" 
+            autocomplete="off"
+            [(ngModel)]="task.taskDescription"
+          >
+          </textarea>
+          <span style="color:red" *ngIf="taskDescription && taskDescription.invalid && taskDescription.touched">
+          Task description required!</span>
+          <pre></pre>
+          <label><b>Due Date<span class="required-indicator">*</span></b></label>
+          <br>
+          <input type="date" 
+          [value]="TodayDate" 
+          [min]="minValue"
+          formControlName="dueDate" 
+          [(ngModel)]="task.dueDate">
+          <pre></pre>
+
+          <!--Status-->
+          <label><b>Status<span class="required-indicator">*</span></b></label>
+          <div *ngFor="let state of status">
+             <input type="radio"
+             name="statusOfTask"
+             value="{{state.value}}"
+             (change)="radioHandler(state.value)"
+             formControlName="statusOfTask"
+             [checked]="selectedOption"
+             [(ngModel)]="task.status"
+             >
+             {{state.indicator}}
+             {{state.value}}
+          </div>
+          
+          <pre></pre>
+          <div>
+
+            <!--create team-->
+          <label>
+            <b>Would you like to add people in task?
+            <span class="required-indicator">*</span>
+            </b>
+          </label>
+          <label>
+              <input type="radio"
+                class="rad"
+                formControlName="yesOrNoOption" 
+                value="Yes" #yesOption 
+                (change)="toggleMultiselect(yesOption.value)"
+                style="margin-left: 10px;"
+                
+              >
+              Yes
+            </label>
+            <label>
+              <input type="radio" 
+                class="rad"
+                formControlName="yesOrNoOption" 
+                value="No" #noOption 
+                (change)="toggleMultiselect(noOption.value)"
+                style="margin-left: 10px;"
+              >
+              No
+            </label>
+            <br>
+            <pre></pre>
+            <div *ngIf="showMultiselect">
+              <label>
+                <b><i>Create Team</i></b>
+              </label>
+                <!--Team leader--> 
+                <div>
+                  <ng-select style="font-family: roboto"
+                   [items]="teamLead" 
+                   bindLabel="userName" 
+                   bindValue="id" 
+                   (change)="itemSelected($event)" 
+                   id="teamLeader"
+                   [multiple]="false" 
+                   [closeOnSelect]="false" 
+                   placeholder="Team Leader" 
+                   formControlName="teamLeader"
+                   [(ngModel)]="task.teamLeader"
+                  >
+                  <ng-option *ngFor="let teamLeader of teamLead">
+                    {{teamLeader.userName}}
+                  </ng-option>
+                  </ng-select>
+                   <span style="color:red" *ngIf=" teamLeader && teamLeader.invalid && teamLeader.touched">
+                    Team Leader is required!</span>
+                 </div>
+
+                 <!--Team member--> 
+                 <div>
+                  <ng-select style="font-family: roboto" 
+                   [items]="teamMember" 
+                   bindLabel="userName" 
+                   bindValue="id" 
+                   (change)="onSelectionChange($event)"
+                   [multiple]="true" 
+                   [closeOnSelect]="false" 
+                   id="teamMem"
+                   placeholder="Team Member / Team Members" 
+                   formControlName="teamMem"
+                   [(ngModel)]="task.teamMembers"
+                  > 
+                  <ng-option *ngFor="let teamMem of teamMember" [value]="teamMem">
+                    {{teamMem.userName}}
+                  </ng-option>
+                  </ng-select>
+                  <span style="color:red" *ngIf="teamMem && teamMem.touched && teamMem.invalid">
+                    Team Member is required! Please select atleast one team member.</span>
+                </div>
+              <div>
+
+                <!--preview button-->
+                  <button mat-button (click)="onClick()"> Preview </button>
+                  <pre></pre>
+
+                  <!--table-->
+                  <div *ngIf="clicked">
+                      <table>
+                          <thead>
+                            <tr>
+                              <th>Team Details</th>
+                              <th>Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr  >
+                              <td *ngFor="let item of teamLead">
+                                {{item.userName}}
+                                <span class="text-color">
+                                  <i>(Team Leader)</i>
+                                </span>
+                              </td>
+                              <td>
+                               {{selectedOption}}
+                              </td>
+                            </tr>
+                            <tr *ngFor="let selectedMem of selectedMembers">
+                            <td>
+                              {{ selectedMem.userName }}
+                              <span class="text-color">
+                                <i>(Team Member)</i>
+                              </span>
+                            </td>
+                            <td>
+                              {{selectedOption}}
+                             </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <pre></pre>
+
+          <div class="buttons">
+              <button mat-button class="btn btn-dark"
+               [disabled]="formValidation.invalid"
+               (click)="onSubmit()"
+               >
+                Done 
+              </button> 
+
+              <button mat-button class="btn btn-light" 
+              style="margin-left: 30px;"
+              (click)="onReset()"
+             > 
+              Reset
+             </button>
+
+              <button mat-button class="btn btn-light" 
+               style="margin-left: 30px;"
+               (click)="onCancel()"
+              > 
+               Cancel 
+              </button>
+          </div>
+      </div> 
+  </form> 
+</div> 
